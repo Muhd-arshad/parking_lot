@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "912123146616",
+    "project_id": "parking-lot-d97ad",
+    "storage_bucket": "parking-lot-d97ad.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:912123146616:android:abdb2096c5a98759fd588d",
+        "android_client_info": {
+          "package_name": "com.example.parkinglot"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQDQAcZYntzOvcotbKmOmYwo8xpYyP49U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
