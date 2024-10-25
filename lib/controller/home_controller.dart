@@ -57,7 +57,7 @@ class HomeController with ChangeNotifier {
     if (duration.inMinutes < 10) {
       return 0.0;
     } else {
-      int hours = (duration.inMinutes - 10) ~/ 60 + 1;
+      int hours = ((duration.inMinutes - 10) / 60).ceil();
       return hours * 100.0;
     }
   }
