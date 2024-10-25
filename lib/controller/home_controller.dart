@@ -52,8 +52,9 @@ class HomeController with ChangeNotifier {
 
     exitTime = DateTime.now();
     Duration duration = exitTime!.difference(entryTime!);
+    log('duation ===$duration');
     notifyListeners();
-    if (duration.inMinutes <= 10) {
+    if (duration.inMinutes < 10) {
       return 0.0;
     } else {
       int hours = (duration.inMinutes - 10) ~/ 60 + 1;
