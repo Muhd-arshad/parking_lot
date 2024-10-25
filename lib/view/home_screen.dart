@@ -22,8 +22,10 @@ class HomeScreen extends StatelessWidget {
             icon: const Icon(Icons.exit_to_app),
             onPressed: () {
               FirebaseAuth.instance.signOut();
-              Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (ctx) => const AuthScreen()));
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (ctx) => const AuthScreen()),
+                (route) => false,
+              );
             },
           )
         ],
@@ -42,6 +44,15 @@ class HomeScreen extends StatelessWidget {
                       homeProvider.reserveSlot(slot.slotNumber, user!.uid);
                     } else {
                       if (slot.reservedBy == user!.uid) {
+                        double amount = homeProvider.calculateParkingFee(
+                            slot.slotNumber, slot.entryTime);
+                        await showCancellationDialog(
+                          context,
+                          amount,
+                          slot.entryTime,
+                          homeProvider.exitTime,
+                          homeProvider,
+                        );
                         homeProvider.releaseSlot(slot.slotNumber);
                       } else {
                         showFlushbar(context, 'Already booked');
@@ -64,6 +75,44 @@ class HomeScreen extends StatelessWidget {
                 );
               },
             ),
+    );
+  }
+
+  Future<void> showCancellationDialog(BuildContext context, double amount,
+      DateTime? entryTime, DateTime? exitTime, HomeController homeProvider) {
+    return showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Parking Fee'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Entry Time: ${homeProvider.timeFormat.format(entryTime!)}",
+              style: const TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              "Exit Time: ${homeProvider.timeFormat.format(exitTime!)}",
+              style: const TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              "Amount: \$${amount.toStringAsFixed(2)}",
+              style: const TextStyle(fontSize: 16),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
     );
   }
 }

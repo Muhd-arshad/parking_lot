@@ -20,14 +20,15 @@ class ParkingService {
 
   Stream<List<Map<String, dynamic>>> fetchParkingSlots() {
     return firestore.collection('parkingSlots').snapshots().map((snapshot) {
-      return snapshot.docs.map((doc) => {
-        ...doc.data(),
-        'slotNumber': int.parse(doc.id.split('_').last),
-      }).toList();
+      return snapshot.docs
+          .map((doc) => {
+                ...doc.data(),
+                'slotNumber': int.parse(doc.id.split('_').last),
+              })
+          .toList();
     });
   }
 
- 
   Future<void> reserveSlot(int slotNumber, String userId) async {
     await firestore.collection('parkingSlots').doc('slot_$slotNumber').update({
       'isAvailable': false,
@@ -36,14 +37,18 @@ class ParkingService {
     });
   }
 
-
   Future<void> releaseSlot(int slotNumber) async {
-    var doc = await firestore.collection('parkingSlots').doc('slot_$slotNumber').get();
+    var doc = await firestore
+        .collection('parkingSlots')
+        .doc('slot_$slotNumber')
+        .get();
     Timestamp entryTime = doc['entryTime'];
     Timestamp exitTime = Timestamp.now();
 
-    int minutesSpent = exitTime.toDate().difference(entryTime.toDate()).inMinutes;
-    double fees = (minutesSpent > 10) ? ((minutesSpent - 10) / 60).ceil() * 100 : 0;
+    int minutesSpent =
+        exitTime.toDate().difference(entryTime.toDate()).inMinutes;
+    double fees =
+        (minutesSpent > 10) ? ((minutesSpent - 10) / 60).ceil() * 100 : 0;
 
     await firestore.collection('parkingSlots').doc('slot_$slotNumber').update({
       'isAvailable': true,
@@ -51,12 +56,15 @@ class ParkingService {
       'entryTime': null,
     });
 
-    await firestore.collection('users').doc(doc['reservedBy']).collection('history').add({
+    await firestore
+        .collection('users')
+        .doc(doc['reservedBy'])
+        .collection('history')
+        .add({
       'slotNumber': slotNumber,
       'entryTime': entryTime,
       'exitTime': exitTime,
       'fees': fees,
     });
   }
-  
 }
