@@ -4,7 +4,9 @@ import 'package:parkinglot/controller/auth_controller.dart';
 import 'package:parkinglot/controller/history_controller.dart';
 import 'package:parkinglot/controller/home_controller.dart';
 import 'package:parkinglot/view/auth_screen.dart';
+import 'package:parkinglot/view/home_view.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,7 +43,15 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home: const AuthScreen(),
+        home: StreamBuilder(
+            stream: FirebaseAuth.instance.authStateChanges(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return const HomeViewScreen();
+              } else {
+                return const AuthScreen();
+              }
+            }),
       ),
     );
   }
